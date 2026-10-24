@@ -1,4 +1,4 @@
-import {  Outlet } from "react-router"
+import {  Link, Outlet } from "react-router"
 import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { ContactList } from "../components/ContactList"
 // import { ConatctInfo } from "../components/ConatctInfo"
 // import { ContactInfoSkeleton } from '../components/ContactInfoSkeleton';
-import { NoContactSelected } from "../components/NoContactSelected";
+// import { NoContactSelected } from "../components/NoContactSelected";
+import { ContactDetails } from "../components/contact-details/ContactDetails";
 
 export default function ChatLayout() {
   return (
@@ -16,7 +17,9 @@ export default function ChatLayout() {
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-full bg-primary" />
-            <span className="font-semibold">NexTalk</span>
+              <Link to={'/chat'}>
+                <span className="font-semibold">NexTalk</span>
+              </Link>
           </div>
         </div>
         <ContactList />
@@ -45,8 +48,9 @@ export default function ChatLayout() {
           <div className="h-14 border-b px-4 flex items-center">
             <h2 className="font-medium">Contact details</h2>
           </div>
+          <ContactDetails />
           {/* <ConatctInfo /> */}
-          <NoContactSelected />
+          {/* <NoContactSelected /> */}
           {/* <ContactInfoSkeleton /> */}
         </div>
       </div>
