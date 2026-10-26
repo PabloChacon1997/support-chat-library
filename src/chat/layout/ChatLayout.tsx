@@ -1,11 +1,12 @@
 import {  Link, Outlet, useNavigate } from "react-router"
 import { LogOut, X } from "lucide-react"
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button"
 
 import { ContactList } from "../components/ContactList"
 import { ContactDetails } from "../components/contact-details/ContactDetails";
+import { checkAuth } from "@/fake/fake-data";
 
 export default function ChatLayout() {
   const navigate = useNavigate();
@@ -16,6 +17,14 @@ export default function ChatLayout() {
     queyClient.invalidateQueries({ queryKey: ['user'] })
     navigate('/auth', { replace: true })
   }
+
+  const {data: user} = useQuery({
+    queryKey: ['user'],
+    queryFn: () => {
+      const token = localStorage.getItem('TOKEN');
+      return checkAuth(token ?? '')
+    }
+  })
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -24,7 +33,7 @@ export default function ChatLayout() {
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-full bg-primary" />
               <Link to={'/chat'}>
-                <span className="font-semibold">NexTalk</span>
+                <span className="font-semibold">{user?.name ?? '...'}</span>
               </Link>
           </div>
         </div>

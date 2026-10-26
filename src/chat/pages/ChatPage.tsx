@@ -1,16 +1,18 @@
 import { useState } from "react"
 import { useParams } from "react-router"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Copy, Download, ThumbsUp, ThumbsDown, Send, MessageSquare } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getClientMessages, sendMessage } from "@/fake/fake-data"
+import type { Message } from "../interfaces/chat.interface";
 
 
 export default function ChatPage() {
   const { clientId } = useParams();
+  const queryClient = useQueryClient();
 
   const [input, setInput] = useState("")
 
@@ -22,24 +24,24 @@ export default function ChatPage() {
   const { mutate: sendMessageMutation } = useMutation({
     mutationFn: sendMessage,
     onSuccess: (newMessage) => {
-      console.log({newMessage});
-    },
-    onError: () => {
-      console.log('error')
+      queryClient.setQueryData(['messages', clientId], (oldMessages: Message[]) => [
+        ...oldMessages,
+        newMessage
+      ])
     }
   })
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    console.log(input)
+    // console.log(input)
 
-    // sendMessageMutation({
-    //   content: input,
-    //   clientId: clientId ?? '',
-    //   createdAt: new Date(),
-    //   sender: 'agent'
-    // })
+    sendMessageMutation({
+      content: input,
+      clientId: clientId ?? '',
+      createdAt: new Date(),
+      sender: 'agent'
+    })
     setInput('')
   }
 
@@ -68,13 +70,13 @@ export default function ChatPage() {
         <div className="space-y-4">
           {messages?.map((message, index) => (
             <div key={index} className="w-full">
-              {message.sender === "agent" ? (
+              {message.sender === "client" ? (
                 // Agent message - left aligned
                 <div className="flex gap-2 max-w-[80%]">
                   <div className="h-8 w-8 rounded-full bg-primary shrink-0" />
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">NexTalk</span>
+                      <span className="text-sm font-medium">Client</span>
                       <span className="text-sm text-muted-foreground">{message.createdAt.toLocaleString()}</span>
                     </div>
                     <div className="p-3 bg-muted/50 rounded-lg">
